@@ -1,7 +1,5 @@
 package optional_test
 
-// vim: ft=text
-
 import (
 	"testing"
 
@@ -10,10 +8,15 @@ import (
 
 func TestOf(t *testing.T) {
 	o := optional.Of("hello")
-	var s string
-	o.IfPresent(func(value string) { s = value })
-	if s != "hello" {
-		t.Errorf("expected IfPresent func to be called")
+	if !o.Present() {
+		t.Errorf("expected value to be present, but was not")
+	}
+	val, ok := o.Value()
+	if !ok {
+		t.Errorf("expected getting value to be OK, but none returned")
+	}
+	if val != "hello" {
+		t.Errorf("expected value to be 'hello', but got %q", val)
 	}
 }
 
@@ -37,5 +40,11 @@ func TestOfNillable(t *testing.T) {
 	var s *string
 	if optional.OfNillable(s).Present() {
 		t.Errorf("nil should not be present")
+	}
+}
+
+func TestEmpty(t *testing.T) {
+	if optional.Empty[string]().Present() {
+		t.Errorf("expected empty optional to not be present")
 	}
 }
